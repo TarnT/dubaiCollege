@@ -5,3 +5,7 @@ from flask import Flask
 # Flask (capitalised) is the foundation of the website
 
 app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return "Hello, world of Flask"

@@ -12,4 +12,4 @@ def index():
  
 @app.route("/test")
 def test():
-    return "Should be a test."
+    return render_template("test.html")

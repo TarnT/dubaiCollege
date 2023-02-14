@@ -1,12 +1,15 @@
 import sqlite3
 from flask import Flask, render_template, request
+from flask_sqlalchemy import SQLAlchemy
 
 # flask (lowercase) is the library
 # Flask (capitalised) is the foundation of the website
-
 # remember to use names, not ID tags, for HTML forms
 
+
+# initisialising application
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "catsanddogs"
 DATABASE = "SQL/users.db"
 
 @app.route("/")
@@ -24,10 +27,6 @@ def login():
         email = request.form.get("inputEmail")
         password = request.form.get("inputPassword")
         print(email, password)
-
-        with sqlite3.connect(DATABASE) as conn:
-            cur = conn.cursor()
-            cur.execute("SELECT username, password FROM Users ")
 
     return render_template("login.html")
 

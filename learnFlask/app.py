@@ -40,3 +40,6 @@ def signUp():
         password2 = request.form.get("inputPassword2")
 
     return render_template("signUp.html")
+
+if __name__ == "__main__":
+    app.run(debug=True)

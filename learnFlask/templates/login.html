@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
 
+{% block title %}
+Log In
+{% endblock %}
+
 {% block body %}   
 
 <form method="POST">
@@ -16,7 +20,10 @@
     <input type="checkbox" class="form-check-input" id="stayLoggedIn">
     <label class="form-check-label" for="stayLoggedIn">Stay Logged In?</label>
   </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <div align="center">
+    <button type="submit" class="btn btn-primary">Login</button>
+  </div>
 </form>
+<a href="{{url_for('signUp')}}">Don't have an account? Sign up!</a>
     
 {% endblock %}

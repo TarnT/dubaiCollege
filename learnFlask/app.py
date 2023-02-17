@@ -6,8 +6,6 @@ from flask_sqlalchemy import SQLAlchemy
 # Flask (capitalised) is the foundation of the website
 # remember to use names, not ID tags, for HTML forms
 
-# testing with the macbook!
-
 # initisialising application
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "catsanddogs"

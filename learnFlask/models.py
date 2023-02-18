@@ -1,8 +1,10 @@
 from app import db 
+from datetime import datetime
 from flask_login import UserMixin
-from sql_alchemy.sql import func
 
-class User(db.model):
+class User(db.model, UserMixin):
+    __tablename__ = "Users"
     id = db.Column(db.integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.string, nullable=False)
+    email = db.Column(db.string, unique=True, nullable=False)
     password = db.Column(db.string, nullable=False)
+    date_created = db.Column(db.Date(timezone=True), default=datetime.now())

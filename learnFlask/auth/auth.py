@@ -14,6 +14,17 @@ def login():
         email = request.form.get("inputEmail")
         password = request.form.get("inputPassword")
 
+        user = User.query.filter_by(email=email).first()
+        if user:
+            if check_password_hash:
+                check_password_hash(user.password, password):
+                flash("Logged in!", category="error")
+                login_user(user, remember=True)
+                return redirect(url_for("views.index"))
+            else:
+                flash("Incorrect password", category="error")
+        else:
+            flash("Incorrect email.")
 
     return render_template("login.html")
 
@@ -25,7 +36,7 @@ def signUp():
         password1 = request.form.get("inputPassword1")
         password2 = request.form.get("inputPassword2")
         
-        exists = User.query.filter_by(email=email).first() or False 
+        exists = User.query.filter_by(email=email).first() is not None
         if exists:
             flash("Email already exists!", category="error")
         elif password1 != password2:
@@ -33,14 +44,21 @@ def signUp():
         else:
 
             # Add the user to the Database
-            new_user = User(email=email, password=generate_password_hash(password1))
+            new_user = User(email=email, password=generate_password_hash(password1, method="sha256"))
             db.session.add(new_user)
             db.session.commit()
-
-        flash("User Created!")
-        return redirect(url_for("views.index"))
+            flash("User Created!")
+            login_user(new_user, remember=True)
+            return redirect(url_for("views.index"))
 
         # TODO implement checks for passwords and email
+        
+        # TODO implement notice for user for incorrect info
 
 
     return render_template("signUp.html")
+
+@auth.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for("views.index"))

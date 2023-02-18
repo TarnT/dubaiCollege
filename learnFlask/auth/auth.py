@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash 
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
@@ -16,8 +16,7 @@ def login():
 
         user = User.query.filter_by(email=email).first()
         if user:
-            if check_password_hash:
-                check_password_hash(user.password, password):
+            if check_password_hash(user.password, password):
                 flash("Logged in!", category="error")
                 login_user(user, remember=True)
                 return redirect(url_for("views.index"))
@@ -59,6 +58,7 @@ def signUp():
     return render_template("signUp.html")
 
 @auth.route("/logout")
+@login_required
 def logout():
     logout_user()
     return redirect(url_for("views.index"))

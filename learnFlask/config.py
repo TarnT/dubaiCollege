@@ -1,5 +1,3 @@
-import os
-
 class Config:
     SECRET_KEY = "kittens"
     SQLALCHEMY_DATABASE_URI = "sqlite:///users.db"

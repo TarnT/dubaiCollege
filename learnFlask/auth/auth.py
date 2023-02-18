@@ -1,18 +1,8 @@
-from flask import Flask
+from flask import Blueprint, render_template, request
 
-from views.views import general_bp
-from auth.auth import auth_bp
+auth_bp = Blueprint("auth_bp", __name__)
 
-# CONFIG
-app = Flask(__name__)
-
-# registering blueprints
-app.register_blueprint(general_bp)
-app.register_blueprint(auth_bp)
-
-
-'''
-@app.route("/login", methods=["GET", "POST"])
+@auth_bp.route("/login", methods=["GET","POST"])
 def login():
 
     if request.method == "POST":
@@ -22,7 +12,7 @@ def login():
 
     return render_template("login.html")
 
-@app.route("/sign-up", methods=["GET", "POST"])
+@auth_bp.route("/sign-up", methods=["GET", "POST"])
 def signUp():
 
     if request.method == "POST":
@@ -31,7 +21,3 @@ def signUp():
         password2 = request.form.get("inputPassword2")
 
     return render_template("signUp.html")
-'''
-
-if __name__ == "__main__":
-    app.run(debug=True)

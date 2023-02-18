@@ -1,4 +1,7 @@
 from flask import Blueprint, render_template, request, flash 
+from flask_login import login_user, logout_user, login_required
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from app import db
 from models import User
 
@@ -28,9 +31,14 @@ def signUp():
         elif password1 != password2:
             flash("Passwords don't match!", category="error")
         else:
-            new_user = User(email=email, password=password1)
+
+            # Add the user to the Database
+            new_user = User(email=email, password=generate_password_hash(password1))
             db.session.add(new_user)
             db.session.commit()
+
+        flash("User Created!")
+        return redirect(url_for("views.index"))
 
         # TODO implement checks for passwords and email
 

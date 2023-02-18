@@ -1,24 +1,15 @@
-import sqlite3
-from flask import Flask, render_template, request
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask
 
-# flask (lowercase) is the library
-# Flask (capitalised) is the foundation of the website
-# remember to use names, not ID tags, for HTML forms
+from views.views import general_bp
 
-# initisialising application
+# CONFIG
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "catsanddogs"
-DATABASE = "SQL/users.db"
 
-@app.route("/")
-def index():
-    return render_template("index.html")
- 
-@app.route("/test")
-def test():
-    return render_template("test.html")
+# registering blueprints
+app.register_blueprint(general_bp, url_prefix="/")
 
+
+'''
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
@@ -38,6 +29,7 @@ def signUp():
         password2 = request.form.get("inputPassword2")
 
     return render_template("signUp.html")
+'''
 
 if __name__ == "__main__":
     app.run(debug=True)

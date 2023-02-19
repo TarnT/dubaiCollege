@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash 
+from flask import Blueprint, render_template, redirect, request, flash, url_for
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -19,7 +19,7 @@ def login():
             if check_password_hash(user.password, password):
                 flash("Logged in!", category="error")
                 login_user(user, remember=True)
-                return redirect(url_for("views.index"))
+                return redirect(url_for("view_bp.index"))
             else:
                 flash("Incorrect password", category="error")
         else:
@@ -34,8 +34,10 @@ def signUp():
         email = request.form.get("inputEmail")
         password1 = request.form.get("inputPassword1")
         password2 = request.form.get("inputPassword2")
+        print(email, password1, password2)
         
         exists = User.query.filter_by(email=email).first() is not None
+        print(exists)
         if exists:
             flash("Email already exists!", category="error")
         elif password1 != password2:
@@ -48,7 +50,8 @@ def signUp():
             db.session.commit()
             flash("User Created!")
             login_user(new_user, remember=True)
-            return redirect(url_for("views.index"))
+            print("user created")
+            return redirect(url_for("view_bp.index"))
 
         # TODO implement checks for passwords and email
         
@@ -61,4 +64,4 @@ def signUp():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("views.index"))
+    return redirect(url_for("views.templates"))

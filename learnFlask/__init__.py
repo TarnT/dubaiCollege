@@ -25,11 +25,11 @@ def create_app(test_config=None):
         db.create_all()
 
     # importing blueprints
-    from .views.views import general_bp
+    from .views.views import view_bp
     from .auth.auth import auth_bp
 
     # registering blueprints
-    app.register_blueprint(general_bp)
+    app.register_blueprint(view_bp)
     app.register_blueprint(auth_bp)
 
     return app

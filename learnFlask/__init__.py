@@ -1,3 +1,7 @@
+# TODO create proper login form with error messages
+# TODO decide on colour scheme of website
+# TODO curate photos from DASSA (for login)
+
 from flask import Flask
 from flask_login import LoginManager
 
@@ -14,7 +18,7 @@ def create_app(test_config=None):
     from learnFlask.models import User
 
     login_manager = LoginManager()
-    login_manager.login_view = "auth.login"
+    login_manager.login_view = "auth_bp.login"
     login_manager.init_app(app)
 
     @login_manager.user_loader

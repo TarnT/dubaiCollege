@@ -17,7 +17,7 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user:
             if check_password_hash(user.password, password):
-                flash("Logged in!", category="error")
+                flash("Logged in!", category="success")
                 login_user(user, remember=True)
                 return redirect(url_for("view_bp.index"))
             else:
@@ -34,10 +34,8 @@ def signUp():
         email = request.form.get("inputEmail")
         password1 = request.form.get("inputPassword1")
         password2 = request.form.get("inputPassword2")
-        print(email, password1, password2)
         
         exists = User.query.filter_by(email=email).first() is not None
-        print(exists)
         if exists:
             flash("Email already exists!", category="error")
         elif password1 != password2:
@@ -48,7 +46,7 @@ def signUp():
             new_user = User(email=email, password=generate_password_hash(password1, method="sha256"))
             db.session.add(new_user)
             db.session.commit()
-            flash("User Created!")
+            flash("User Created!", category="success")
             login_user(new_user, remember=True)
             print("user created")
             return redirect(url_for("view_bp.index"))
@@ -64,4 +62,4 @@ def signUp():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("views.templates"))
+    return redirect(url_for("view_bp.index"))

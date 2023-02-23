@@ -32,18 +32,23 @@ def signUp():
 
     if request.method == "POST":
         email = request.form.get("inputEmail")
+        username = request.form.get("username")
         password1 = request.form.get("inputPassword1")
         password2 = request.form.get("inputPassword2")
         
-        exists = User.query.filter_by(email=email).first() is not None
-        if exists:
+        emailExists = User.query.filter_by(email=email).first() is not None
+        usernameExists = User.query.filter_by(username=username).first() is not None
+
+        if emailExists:
             flash("Email already exists!", category="error")
+        elif usernameExists:
+            flash("Username already exists", category="error")
         elif password1 != password2:
             flash("Passwords don't match!", category="error")
         else:
 
             # Add the user to the Database
-            new_user = User(email=email, password=generate_password_hash(password1, method="sha256"))
+            new_user = User(email=email, username=username, password=generate_password_hash(password1, method="sha256"))
             db.session.add(new_user)
             db.session.commit()
             flash("User Created!", category="success")
@@ -61,5 +66,6 @@ def signUp():
 @auth_bp.route("/logout")
 @login_required
 def logout():
+    # logout user and return them to the home page
     logout_user()
     return redirect(url_for("view_bp.index"))

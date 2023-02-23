@@ -1,6 +1,4 @@
 # TODO create proper login form with error messages
-# TODO decide on colour scheme of website
-# TODO curate photos from DASSA (for login)
 
 from flask import Flask
 from flask_login import LoginManager

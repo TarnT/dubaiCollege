@@ -1,14 +1,19 @@
 #Version 1.14 - 28/10/22
+# have to revert to original code for each question
 from random import randint
 
 class Player:
 
+    # constructer method for the Player class
+    # user starts off with frostbolt and lightning spells 
     def __init__(self, health):
         self.__Health = health
         self.__Location = None
         self.__Inventory = []
         self.__SpellBook = {"frostbolt": 50, "lightning": 80}
 
+    # adds item to Player's inventory
+    # protected class, can only view from class
     def AddItem(self, item):
         self.__Inventory.append(item)
 
@@ -21,6 +26,7 @@ class Player:
     def GetLocation(self):
         return self.__Location
 
+    # change the user's location and return a descrption of the new location
     def SetLocation(self, location):
         self.__Location = location
         print(self.__Location.GetDescription())
@@ -29,31 +35,51 @@ class Player:
         self.__Health += health
         return self.__Health
 
+    # contains functionality to convert item to action
     def DoCommand(self, command):
         if command == "QUIT":
             return True
         
+        # splits the instruction into an operator and operand
         instructions = command.split(' ')
 
+        # checks for instructions without operand
+        # i.e. only action
         if instructions[0] == "look":
             print(self.__Location.GetDescription())
         elif instructions[0] == "health":
             print(f"you have {self.__Health} health")
+        
         elif instructions[0] == "move" or instructions[0] == "go":
+
+            # prompts user to enter operand if missing from move or go command
             if len(instructions) <= 1:
                 print("Move where?")
             else:
                 self.__Move(instructions[1])
+
+        # adds item to player's inventory and removes it from room
         elif instructions[0] == "get" or instructions[0] == "take":
             self.__Inventory.append(self.__Location.RemoveItem(instructions[1]))
+
+
         elif instructions[0] == "attack":
+            # scans room for creature that user is targeting
             for creature in self.__Location.GetCreatures():
                 if creature.GetName() == instructions[1]:
+                    # inflicts random damage from 0 - 100
+                    # creature.TakeDamage returns true if the creature's health is <= 0
                     damage = randint(1,100)
                     dead = creature.TakeDamage(damage)
+
+                    # remove the creature from the room if dead
                     if dead:
                         print(f"Your attack killed the {creature.GetName()}")
                         self.__Location.RemoveCreature(creature)
+
+                    # tells player how much damage the attack caused
+                    # creature attacks player
+                    # if player is dead, returns True, alive False
                     else:
                         print(f"Your attack caused the {creature.GetName()} to lose {damage} health.")
                         damageTaken = creature.GetAttackDamage()
@@ -64,13 +90,19 @@ class Player:
                             return True
                         else:
                             return False
+
+        # casting spell command
         elif instructions[0] == "cast":
             if len(instructions) != 3:
                 print("Cast which spell at which target?")
             else:
+
+                # extract data from spell
                 spell = instructions[1]
                 target = instructions[2]
                 if spell in self.__SpellBook.keys():
+
+                    # checks if player knows spell, locates creature user targeted
                     for creature in self.__Location.GetCreatures():
                         if creature.GetName() == target:
                             dead = creature.TakeSpellDamage(spell, self.__SpellBook[spell])

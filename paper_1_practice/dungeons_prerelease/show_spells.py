@@ -26,7 +26,7 @@ class Player:
     def GetLocation(self):
         return self.__Location
 
-    # change the user's location and return a description of the new location
+    # change the user's location and return a descrption of the new location
     def SetLocation(self, location):
         self.__Location = location
         print(self.__Location.GetDescription())
@@ -34,9 +34,9 @@ class Player:
     def AdjustHealth(self, health):
         self.__Health += health
         return self.__Health
-    
-    def Teleport(self):
-        print(GameManager.GetRooms())
+
+    def ShowSpells(self):
+        return list(self.__SpellBook.keys())
 
     # contains functionality to convert item to action
     def DoCommand(self, command):
@@ -50,7 +50,10 @@ class Player:
         # i.e. only action
         if instructions[0] == "look":
             print(self.__Location.GetDescription())
-            print(self.__Location)
+        
+        elif instructions[0] in ["s", "spells"]:
+            print(self.ShowSpells())
+
         elif instructions[0] == "health":
             print(f"you have {self.__Health} health")
         
@@ -65,7 +68,6 @@ class Player:
         # adds item to player's inventory and removes it from room
         elif instructions[0] == "get" or instructions[0] == "take":
             self.__Inventory.append(self.__Location.RemoveItem(instructions[1]))
-
 
         elif instructions[0] == "attack":
             # scans room for creature that user is targeting
@@ -122,7 +124,6 @@ class Player:
                                     return False
                 else:
                     print("You don't know that spell!")
-
         elif instructions[0] == "examine":
             if len(instructions) <= 1:
                 print("Examine What?")
@@ -130,13 +131,11 @@ class Player:
                 for i in range(len(self.__Inventory)):
                     if instructions[1] == self.__Inventory[i].GetName():
                         print(self.__Inventory[i].GetDescription())
-
         elif instructions[0] == "eat":
             if len(instructions) <= 1:
                 print("Eat What?")
             else:
                 self.__Eat(instructions[1])
-                
         elif instructions[0] == "inventory" or instructions[0] == "i":
             items = "\n"
             if len(self.__Inventory) > 0:
@@ -265,9 +264,8 @@ class FoodItem(Item):
         return self.__HealAmount
 
 class Room:
-    def __init__(self, name, description):
+    def __init__(self, description):
         self.__Description = description
-        self.__Name = name
         self.__Contents = []
         self.__Creatures = []
         self.__Connections = []
@@ -348,16 +346,6 @@ class Room:
     def SetDescription(self, description):
         self.__Description = description
 
-class GameManager():
-    def __init__():
-        self.__roomList = []
-    
-    def AddRoom(self, roomToAdd):
-        self.__roomList.append(roomToAdd)
-    
-    def GetRooms(self):
-        return self.__roomList
-
 class Game:
     def PlayGame(self):
         command = ""
@@ -365,8 +353,8 @@ class Game:
 
         # initialising the game
         print("Welcome Message...")
-        startRoom = Room("StartRoom", "You are in the starting cave.")
-        lavaRoom = Room("LavaRoom", "You are in a dark cave with a glowing river of lava.")
+        startRoom = Room("You are in the starting cave.")
+        lavaRoom = Room("You are in a dark cave with a glowing river of lava.")
         apple = FoodItem("apple", "a beautiful green apple, it looks delicious.", 10)
         redApple = FoodItem("apple", "a beautiful rosy red apple, it looks delicious.", 10)
         stoneApple = Item("apple", "a beautiful apple made of stone.")

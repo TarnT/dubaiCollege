@@ -1,14 +1,19 @@
 #Version 1.14 - 28/10/22
+# have to revert to original code for each question
 from random import randint
 
 class Player:
 
+    # constructer method for the Player class
+    # user starts off with frostbolt and lightning spells 
     def __init__(self, health):
         self.__Health = health
         self.__Location = None
         self.__Inventory = []
         self.__SpellBook = {"frostbolt": 50, "lightning": 80}
 
+    # adds item to Player's inventory
+    # protected class, can only view from class
     def AddItem(self, item):
         self.__Inventory.append(item)
 
@@ -21,6 +26,7 @@ class Player:
     def GetLocation(self):
         return self.__Location
 
+    # change the user's location and return a description of the new location
     def SetLocation(self, location):
         self.__Location = location
         print(self.__Location.GetDescription())
@@ -29,38 +35,52 @@ class Player:
         self.__Health += health
         return self.__Health
 
-    def DropItem(self, drop_item):
-        for i in range(len(self.__Inventory)):
-            if self.__Inventory[i].GetName() == drop_item:
-                self.GetLocation().AddItem(self.__Inventory.pop(i))
-                return True
-        return False
-
+    # contains functionality to convert item to action
     def DoCommand(self, command):
         if command == "QUIT":
             return True
         
+        # splits the instruction into an operator and operand
         instructions = command.split(' ')
 
+        # checks for instructions without operand
+        # i.e. only action
         if instructions[0] == "look":
             print(self.__Location.GetDescription())
+            print(self.__Location)
         elif instructions[0] == "health":
             print(f"you have {self.__Health} health")
+        
         elif instructions[0] == "move" or instructions[0] == "go":
+
+            # prompts user to enter operand if missing from move or go command
             if len(instructions) <= 1:
                 print("Move where?")
             else:
                 self.__Move(instructions[1])
+
+        # adds item to player's inventory and removes it from room
         elif instructions[0] == "get" or instructions[0] == "take":
             self.__Inventory.append(self.__Location.RemoveItem(instructions[1]))
+
+
         elif instructions[0] == "attack":
+            # scans room for creature that user is targeting
             for creature in self.__Location.GetCreatures():
                 if creature.GetName() == instructions[1]:
+                    # inflicts random damage from 0 - 100
+                    # creature.TakeDamage returns true if the creature's health is <= 0
                     damage = randint(1,100)
                     dead = creature.TakeDamage(damage)
+
+                    # remove the creature from the room if dead
                     if dead:
                         print(f"Your attack killed the {creature.GetName()}")
                         self.__Location.RemoveCreature(creature)
+
+                    # tells player how much damage the attack caused
+                    # creature attacks player
+                    # if player is dead, returns True, alive False
                     else:
                         print(f"Your attack caused the {creature.GetName()} to lose {damage} health.")
                         damageTaken = creature.GetAttackDamage()
@@ -71,13 +91,19 @@ class Player:
                             return True
                         else:
                             return False
+
+        # casting spell command
         elif instructions[0] == "cast":
             if len(instructions) != 3:
                 print("Cast which spell at which target?")
             else:
+
+                # extract data from spell
                 spell = instructions[1]
                 target = instructions[2]
                 if spell in self.__SpellBook.keys():
+
+                    # checks if player knows spell, locates creature user targeted
                     for creature in self.__Location.GetCreatures():
                         if creature.GetName() == target:
                             dead = creature.TakeSpellDamage(spell, self.__SpellBook[spell])
@@ -118,11 +144,6 @@ class Player:
             else:
                 items += "You aren't carrying anything"
             print(items)
-
-        elif instructions[0] == "drop":
-            dropped = self.DropItem(instructions[1])
-            if not dropped:
-                print("item is not in your inventory!\n")
         else:
             print("You can't do that")
             return False
@@ -226,8 +247,8 @@ class Item:
     def GetDescription(self):
         return self._Description
 
-    def SetDescription(self, description):
-        self._Description = description
+    def SetDescrption(self, description):
+        self._Desription = description
 
 class FoodItem(Item):
     def __init__(self, name, description, heals):
@@ -240,10 +261,10 @@ class FoodItem(Item):
 class Room:
     def __init__(self, name, description):
         self.__Description = description
+        self.__Name = name
         self.__Contents = []
         self.__Creatures = []
         self.__Connections = []
-        self.__name = name
     
     def AddConnection(self, connection):
         self.__Connections.append(connection)
@@ -328,7 +349,7 @@ class Game:
 
         # initialising the game
         print("Welcome Message...")
-        startRoom = Room("startRooom", "You are in the starting cave.")
+        startRoom = Room("startRoom", "You are in the starting cave.")
         lavaRoom = Room("lavaRoom", "You are in a dark cave with a glowing river of lava.")
         apple = FoodItem("apple", "a beautiful green apple, it looks delicious.", 10)
         redApple = FoodItem("apple", "a beautiful rosy red apple, it looks delicious.", 10)

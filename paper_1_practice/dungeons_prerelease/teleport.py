@@ -11,6 +11,7 @@ class Player:
         self.__Location = None
         self.__Inventory = []
         self.__SpellBook = {"frostbolt": 50, "lightning": 80}
+        self.__TeleportRoomList = []
 
     # adds item to Player's inventory
     # protected class, can only view from class
@@ -35,8 +36,24 @@ class Player:
         self.__Health += health
         return self.__Health
     
+    def AddTeleportRoom(self, roomToAdd):
+        self.__TeleportRoomList.append(roomToAdd)
+    
+    def GetTeleportRooms(self):
+        return self.__TeleportRoomList
+
     def Teleport(self):
-        print(GameManager.GetRooms())
+        roomList = self.GetTeleportRooms()
+        print(f"\nYou can teleport to {[i.GetName() for i in roomList]}, which one?")
+        roomToTeleport = input("")
+
+        for i in range(len(roomList)):
+            if roomList[i].GetName().lower() == roomToTeleport.lower():
+                self.SetLocation(roomList[i])
+                return True
+        
+        print("You can't do that! That room doesn't exist!")
+        return False
 
     # contains functionality to convert item to action
     def DoCommand(self, command):
@@ -136,7 +153,10 @@ class Player:
                 print("Eat What?")
             else:
                 self.__Eat(instructions[1])
-                
+        
+        elif instructions[0] in ["t", "teleport"]:
+            self.Teleport()
+
         elif instructions[0] == "inventory" or instructions[0] == "i":
             items = "\n"
             if len(self.__Inventory) > 0:
@@ -348,15 +368,8 @@ class Room:
     def SetDescription(self, description):
         self.__Description = description
 
-class GameManager():
-    def __init__():
-        self.__roomList = []
-    
-    def AddRoom(self, roomToAdd):
-        self.__roomList.append(roomToAdd)
-    
-    def GetRooms(self):
-        return self.__roomList
+    def GetName(self):
+        return self.__Name
 
 class Game:
     def PlayGame(self):
@@ -365,6 +378,7 @@ class Game:
 
         # initialising the game
         print("Welcome Message...")
+
         startRoom = Room("StartRoom", "You are in the starting cave.")
         lavaRoom = Room("LavaRoom", "You are in a dark cave with a glowing river of lava.")
         apple = FoodItem("apple", "a beautiful green apple, it looks delicious.", 10)
@@ -384,6 +398,8 @@ class Game:
         pc.SetLocation(startRoom)
         pc.AddItem(redApple)
         pc.AddItem(stoneApple)
+        pc.AddTeleportRoom(startRoom)
+        pc.AddTeleportRoom(lavaRoom)
 
         while not gameOver:
             command = input("What would you like to do? ")

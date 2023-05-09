@@ -3,7 +3,7 @@
 class TreasureChest:
     def __init__(self, question, answer, points):
         self.__question = question # string
-        self.__answer = answer # int
+        self.__answer = int(answer) # int
         self.__points = points # int 
     
     # 4
@@ -12,7 +12,7 @@ class TreasureChest:
     
     # 5
     def checkAnswer(self, answer):
-        return True if answer == self.__answer else False
+        return True if self.__answer == answer else False
 
     def getPoints(self, attempts):
         if attempts == 1:
@@ -43,3 +43,19 @@ def readData():
         print("File does not exist!")
     
     return None
+
+chests = readData()
+attempts = 1
+question = int(input("Enter a question number: "))
+print(chests[question - 1].getQuestion())
+
+while True:
+    answer = int(input("Answer: "))
+    if chests[question - 1].checkAnswer(answer):
+        break
+    else:
+        print("Incorrect answer!")
+        attempts += 1
+
+points = chests[question - 1].getPoints(attempts)
+print(points)

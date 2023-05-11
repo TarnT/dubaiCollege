@@ -12,6 +12,6 @@ while index < len(text) - 1:
         compressed += f"{text[index]}{count + 1} "
     index += 1
 
-compressed += f"{text[- 1]}{count + 1} "
+compressed += f"{text[-1]}{count + 1} "
 
 print(compressed)

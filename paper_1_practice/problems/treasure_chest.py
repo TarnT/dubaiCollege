@@ -45,17 +45,18 @@ def readData():
     return None
 
 chests = readData()
-attempts = 1
-question = int(input("Enter a question number: "))
-print(chests[question - 1].getQuestion())
+if chests:
+    attempts = 1
+    question = int(input("Enter a question number: "))
+    print(chests[question - 1].getQuestion())
 
-while True:
-    answer = int(input("Answer: "))
-    if chests[question - 1].checkAnswer(answer):
-        break
-    else:
-        print("Incorrect answer!")
-        attempts += 1
+    while True:
+        answer = int(input("Answer: "))
+        if chests[question - 1].checkAnswer(answer):
+            break
+        else:
+            print("Incorrect answer!")
+            attempts += 1
 
-points = chests[question - 1].getPoints(attempts)
-print(points)
+    points = chests[question - 1].getPoints(attempts)
+    print(points)

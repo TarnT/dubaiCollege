@@ -160,6 +160,7 @@ class Player:
                 directionFound = True
                 # checks to see if valid location
                 # automatically moves if valid location, as moves then returns true
+                # passes the player to the function using self
                 if not self.__Location.GetConnections()[i].GoThrough(self,direction):
                     print(f"You can't go {direction}")
 
@@ -194,6 +195,8 @@ class Creature:
     def SetHealth(self, amount):
         self.__Health = amount
 
+    # deducts attack damage
+    # returns true if dead
     def TakeDamage(self, damage):
         self.__Health -= damage
         if self.__Health <= 0:
@@ -202,7 +205,7 @@ class Creature:
             return False
 
     def TakeSpellDamage(self, spell, damage):
-        # returns True if the creature dies, else False if it's still alive
+        # returns True if the creature dies, False if it's still alive
         print(f"{self.__Name} takes {damage} from {spell}")
         return self.TakeDamage(damage)
 
@@ -210,6 +213,8 @@ class DragonCreature(Creature):
     def __init__(self):
         super().__init__("dragon", 100)
 
+    # 50% chance die due to fiery breath
+    # else calls parent Creature method for random damage from 1 to 10
     def GetAttackDamage(self):
         if randint(1,2) == 1:
             print("The dragon engulfs you with his fiery breath.")
@@ -217,6 +222,7 @@ class DragonCreature(Creature):
         else:
             return super().GetAttackDamage()
 
+    # frosbolt kills the dragon?
     def TakeSpellDamage(self, spell, damage):
         if spell == "frostbolt":
             return True
@@ -229,6 +235,7 @@ class Connection:
         self.__RoomTo = roomTo
         self.__Direction = direction
 
+    # player is passed using self in player class
     def GoThrough(self, player, direction):
         if player.GetLocation() == self.__RoomFrom and direction == self.__Direction:
             player.SetLocation(self.__RoomTo)
@@ -256,8 +263,8 @@ class Item:
     def GetDescription(self):
         return self._Description
 
-    def SetDescrption(self, description):
-        self._Desription = description
+    def SetDescription(self, description):
+        self._Description = description
 
 class FoodItem(Item):
     def __init__(self, name, description, heals):
@@ -329,6 +336,7 @@ class Room:
         else:
             exits = "There are no visible exits"
 
+        # returns all info formatted ready for output
         return self.__Description + creatures + items + exits
 
     def GetDirections(self):

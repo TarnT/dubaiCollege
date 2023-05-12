@@ -49,8 +49,6 @@ class Player:
             print(self.__Location.GetDescription())
         elif instructions[0] == "health":
             print(f"you have {self.__Health} health")
-        elif instructions[0] == "test":
-            print(self.__Location.GetDirections())
         
         elif instructions[0] == "move" or instructions[0] == "go":
 
@@ -133,14 +131,14 @@ class Player:
                 print("Eat What?")
             else:
                 self.__Eat(instructions[1])
-                
+
         elif instructions[0] == "inventory" or instructions[0] == "i":
             items = "\n"
             if len(self.__Inventory) > 0:
                 if len(self.__Inventory) == 1:
                     items += f"You have the following item: {self.__Inventory[0].GetName()}"
                 else:
-                    # formats the string so sepearated by commas, finishes with and
+                    # formats the string for correct grammar / format
                     items += f"You have the following items: {self.__Inventory[0].GetName()}"
                     for i in range(1,len(self.__Inventory)-1):
                         items += ", " + self.__Inventory[i].GetName()
@@ -153,19 +151,27 @@ class Player:
             return False
 
     def __Move(self, direction):
+        # sets the directionFound to False
         exits = self.__Location.GetDirections()
         directionFound = False
 
         for i in range(len(exits)):
             if direction == exits[i]:
                 directionFound = True
+                # checks to see if valid location
+                # automatically moves if valid location, as moves then returns true
+                # passes the player to the function using self
                 if not self.__Location.GetConnections()[i].GoThrough(self,direction):
                     print(f"You can't go {direction}")
 
+        # lets user know if not a valid direction
         if not directionFound:
             print(f"There is no exit to the {direction}")
 
-    def __Eat(self,food):
+    def __Eat(self, food):
+        # goes through each item in inventory
+        # if same item, adds the health of the item by calling the .GetHeals()
+        # removes it from inventory
         for foodPosition in range(len(self.__Inventory)):
             if self.__Inventory[foodPosition].GetName() == food:
                 self.__Health += self.__Inventory[foodPosition].GetHeals()
@@ -189,6 +195,8 @@ class Creature:
     def SetHealth(self, amount):
         self.__Health = amount
 
+    # deducts attack damage
+    # returns true if dead
     def TakeDamage(self, damage):
         self.__Health -= damage
         if self.__Health <= 0:
@@ -197,7 +205,7 @@ class Creature:
             return False
 
     def TakeSpellDamage(self, spell, damage):
-        # returns True if the creature dies, else False if it's still alive
+        # returns True if the creature dies, False if it's still alive
         print(f"{self.__Name} takes {damage} from {spell}")
         return self.TakeDamage(damage)
 
@@ -205,6 +213,8 @@ class DragonCreature(Creature):
     def __init__(self):
         super().__init__("dragon", 100)
 
+    # 50% chance die due to fiery breath
+    # else calls parent Creature method for random damage from 1 to 10
     def GetAttackDamage(self):
         if randint(1,2) == 1:
             print("The dragon engulfs you with his fiery breath.")
@@ -212,6 +222,7 @@ class DragonCreature(Creature):
         else:
             return super().GetAttackDamage()
 
+    # frosbolt kills the dragon?
     def TakeSpellDamage(self, spell, damage):
         if spell == "frostbolt":
             return True
@@ -224,7 +235,8 @@ class Connection:
         self.__RoomTo = roomTo
         self.__Direction = direction
 
-    def GoThrough(self,player, direction):
+    # player is passed using self in player class
+    def GoThrough(self, player, direction):
         if player.GetLocation() == self.__RoomFrom and direction == self.__Direction:
             player.SetLocation(self.__RoomTo)
             return True
@@ -251,8 +263,8 @@ class Item:
     def GetDescription(self):
         return self._Description
 
-    def SetDescrption(self, description):
-        self._Desription = description
+    def SetDescription(self, description):
+        self._Description = description
 
 class FoodItem(Item):
     def __init__(self, name, description, heals):
@@ -324,13 +336,14 @@ class Room:
         else:
             exits = "There are no visible exits"
 
+        # returns all info formatted ready for output
         return self.__Description + creatures + items + exits
 
     def GetDirections(self):
         directions = []
         for connection in self.__Connections:
             directions.append(connection.GetDirection())
-        return (directions)
+        return(directions)
 
     def RemoveCreature(self, creature):
         self.__Creatures.remove(creature)
@@ -345,9 +358,6 @@ class Room:
     def SetDescription(self, description):
         self.__Description = description
 
-    def GetConnections(self):
-        return self.__Connections
-
 class Game:
     def PlayGame(self):
         command = ""
@@ -357,6 +367,7 @@ class Game:
         print("Welcome Message...")
         startRoom = Room("You are in the starting cave.")
         lavaRoom = Room("You are in a dark cave with a glowing river of lava.")
+        connectingRoom = Room("You are in a beautiful cave. There is a a glowing river.")
         apple = FoodItem("apple", "a beautiful green apple, it looks delicious.", 10)
         redApple = FoodItem("apple", "a beautiful rosy red apple, it looks delicious.", 10)
         stoneApple = Item("apple", "a beautiful apple made of stone.")

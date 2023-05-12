@@ -11,7 +11,6 @@ class Player:
         self.__Location = None
         self.__Inventory = []
         self.__SpellBook = {"frostbolt": 50, "lightning": 80}
-        self.__InventoryLimit = 2
 
     # adds item to Player's inventory
     # protected class, can only view from class
@@ -51,6 +50,9 @@ class Player:
         elif instructions[0] == "health":
             print(f"you have {self.__Health} health")
         
+        elif instructions[0] == "help":
+            print("You can look, examine, take, go, view inventory, attack, cast, eat")
+        
         elif instructions[0] == "move" or instructions[0] == "go":
 
             # prompts user to enter operand if missing from move or go command
@@ -61,10 +63,7 @@ class Player:
 
         # adds item to player's inventory and removes it from room
         elif instructions[0] == "get" or instructions[0] == "take":
-            if len(self.__Inventory) == self.__InventoryLimit:
-                print(f"Already have {self.__InventoryLimit} items, inventory is full!")
-            else:
-                self.__Inventory.append(self.__Location.RemoveItem(instructions[1]))
+            self.__Inventory.append(self.__Location.RemoveItem(instructions[1]))
 
 
         elif instructions[0] == "attack":

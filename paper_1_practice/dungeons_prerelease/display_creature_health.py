@@ -11,7 +11,6 @@ class Player:
         self.__Location = None
         self.__Inventory = []
         self.__SpellBook = {"frostbolt": 50, "lightning": 80}
-        self.__InventoryLimit = 2
 
     # adds item to Player's inventory
     # protected class, can only view from class
@@ -61,10 +60,7 @@ class Player:
 
         # adds item to player's inventory and removes it from room
         elif instructions[0] == "get" or instructions[0] == "take":
-            if len(self.__Inventory) == self.__InventoryLimit:
-                print(f"Already have {self.__InventoryLimit} items, inventory is full!")
-            else:
-                self.__Inventory.append(self.__Location.RemoveItem(instructions[1]))
+            self.__Inventory.append(self.__Location.RemoveItem(instructions[1]))
 
 
         elif instructions[0] == "attack":
@@ -86,6 +82,7 @@ class Player:
                     # if player is dead, returns True, alive False
                     else:
                         print(f"Your attack caused the {creature.GetName()} to lose {damage} health.")
+                        print(f"The {creature.GetName()} has {creature.GetHealth()} health!")
                         damageTaken = creature.GetAttackDamage()
                         print(f"{creature.GetName()} attacks you and causes {damageTaken} damage.")
                         self.__Health -= damageTaken

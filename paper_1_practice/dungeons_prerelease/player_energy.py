@@ -11,7 +11,7 @@ class Player:
         self.__Location = None
         self.__Inventory = []
         self.__SpellBook = {"frostbolt": 50, "lightning": 80}
-        self.__InventoryLimit = 2
+        self.__Energy = 100
 
     # adds item to Player's inventory
     # protected class, can only view from class
@@ -61,10 +61,7 @@ class Player:
 
         # adds item to player's inventory and removes it from room
         elif instructions[0] == "get" or instructions[0] == "take":
-            if len(self.__Inventory) == self.__InventoryLimit:
-                print(f"Already have {self.__InventoryLimit} items, inventory is full!")
-            else:
-                self.__Inventory.append(self.__Location.RemoveItem(instructions[1]))
+            self.__Inventory.append(self.__Location.RemoveItem(instructions[1]))
 
 
         elif instructions[0] == "attack":
@@ -104,24 +101,37 @@ class Player:
                 # extract data from spell
                 spell = instructions[1]
                 target = instructions[2]
-                if spell in self.__SpellBook.keys():
 
-                    # checks if player knows spell, locates creature user targeted
-                    for creature in self.__Location.GetCreatures():
-                        if creature.GetName() == target:
-                            dead = creature.TakeSpellDamage(spell, self.__SpellBook[spell])
-                            if dead:
-                                print(f"Your {spell} killed the {creature.GetName()}")
-                                self.__Location.RemoveCreature(creature)
-                            else:
-                                self.__Health -= creature.GetAttackDamage()
-                                if self.__Health <= 0:
-                                    print("You die")
-                                    return True
-                                else:
-                                    return False
+                if self.__Energy < self.__SpellBook[spell]:
+                    print(f"You don't have enough energy to cast that spell! You need {self.__SpellBook[spell] - self.__Energy} more energy points. Get some mojo!!!!")
+
                 else:
-                    print("You don't know that spell!")
+                    if spell in self.__SpellBook.keys():
+
+                        print(f"The spell uses {self.__SpellBook[spell]} energy!")
+                        self.__Energy -= self.__SpellBook[spell]
+
+                        # checks if player knows spell, locates creature user targeted
+                        for creature in self.__Location.GetCreatures():
+                            if creature.GetName() == target:
+                                dead = creature.TakeSpellDamage(spell, self.__SpellBook[spell])
+                                if dead:
+                                    print(f"Your {spell} killed the {creature.GetName()}")
+                                    self.__Location.RemoveCreature(creature)
+                                    self.__Energy += self.__SpellBook[spell] // 2
+                                    print(f"You have been given {self.__SpellBook[spell] // 2} energy. Your total is {self.__Energy}")
+                                else:
+                                    self.__Health -= creature.GetAttackDamage()
+                                    if self.__Health <= 0:
+                                        print("You die")
+                                        return True
+                                    else:
+                                        self.__Energy += self.__SpellBook[spell] // 2
+                                        print(f"You have been given {self.__SpellBook[spell] // 2} energy. Your total is {self.__Energy}")
+                                        return False
+                    else:
+                        print("You don't know that spell!")
+
         elif instructions[0] == "examine":
             if len(instructions) <= 1:
                 print("Examine What?")
@@ -179,6 +189,7 @@ class Player:
         for foodPosition in range(len(self.__Inventory)):
             if self.__Inventory[foodPosition].GetName() == food:
                 self.__Health += self.__Inventory[foodPosition].GetHeals()
+                self.__Energy += self.__Inventory[foodPosition].GetHeals() * 2
                 self.__Inventory.pop(foodPosition)
                 break
         

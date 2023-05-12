@@ -374,6 +374,7 @@ class Game:
         water = Item("water", "Everian, the best!.")
         glass = Item("glass", "glassy glass.")
         dragon = DragonCreature()
+        mice = Creature("mouse", 10)
 
         startRoom.AddConnection(Connection(startRoom, connectingRoom, "north"))
         connectingRoom.AddConnection(Connection(connectingRoom, startRoom, "south"))
@@ -382,6 +383,9 @@ class Game:
         startRoom.AddItem(apple)
         startRoom.AddItem(glass)
         lavaRoom.AddCreature(dragon)
+        connectingRoom.AddCreature(mice)
+        connectingRoom.AddItem(water)
+        connectingRoom.AddItem(glass)
 
         pc = Player(STARTING_HEALTH)
         pc.SetLocation(startRoom)

@@ -117,9 +117,24 @@ class Player:
                                 else:
                                     return False
 
+                elif spell == "halo":
+                    for creature in self.__Location.GetCreatures():
+                        if creature.GetName() == target:
+                            damage = randint(20, 60)
+                            dead = creature.TakeSpellDamage(spell, damage)
+                            print(f"You gain {damage // 2} from halo. Rejoice in the heals!")
+                            self.__Health += damage // 2
+                            if dead:
+                                print(f"Your Halo killed the {creature.GetName()}")
+                                self.__Location.RemoveCreature(creature)
+                            else:
+                                self.__Health -= creature.GetAttackDamage()
+                                if self.__Health <= 0:
+                                    return True
+                                else:
+                                    return False
                 else:
                     print("You don't know that spell!")
-
         elif instructions[0] == "examine":
             if len(instructions) <= 1:
                 print("Examine What?")
@@ -369,25 +384,18 @@ class Game:
         print("Welcome Message...")
         startRoom = Room("You are in the starting cave.")
         lavaRoom = Room("You are in a dark cave with a glowing river of lava.")
-        connectingRoom = Room("You are in a beautiful cave. There is a a glowing river.")
         apple = FoodItem("apple", "a beautiful green apple, it looks delicious.", 10)
         redApple = FoodItem("apple", "a beautiful rosy red apple, it looks delicious.", 10)
         stoneApple = Item("apple", "a beautiful apple made of stone.")
         water = Item("water", "Everian, the best!.")
         glass = Item("glass", "glassy glass.")
         dragon = DragonCreature()
-        mice = Creature("mouse", 10)
 
-        startRoom.AddConnection(Connection(startRoom, connectingRoom, "north"))
-        connectingRoom.AddConnection(Connection(connectingRoom, startRoom, "south"))
-        connectingRoom.AddConnection(Connection(connectingRoom, lavaRoom, "north"))
-        lavaRoom.AddConnection(Connection(lavaRoom, connectingRoom, "south"))
+        startRoom.AddConnection(Connection(startRoom, lavaRoom, "north"))
+        lavaRoom.AddConnection(Connection(lavaRoom, startRoom, "south"))
         startRoom.AddItem(apple)
         startRoom.AddItem(glass)
         lavaRoom.AddCreature(dragon)
-        connectingRoom.AddCreature(mice)
-        connectingRoom.AddItem(water)
-        connectingRoom.AddItem(glass)
 
         pc = Player(STARTING_HEALTH)
         pc.SetLocation(startRoom)

@@ -375,8 +375,10 @@ class Game:
         glass = Item("glass", "glassy glass.")
         dragon = DragonCreature()
 
-        startRoom.AddConnection(Connection(startRoom, lavaRoom, "north"))
-        lavaRoom.AddConnection(Connection(lavaRoom, startRoom, "south"))
+        startRoom.AddConnection(Connection(startRoom, connectingRoom, "north"))
+        connectingRoom.AddConnection(Connection(connectingRoom, startRoom, "south"))
+        connectingRoom.AddConnection(Connection(connectingRoom, lavaRoom, "north"))
+        lavaRoom.AddConnection(Connection(lavaRoom, connectingRoom, "south"))
         startRoom.AddItem(apple)
         startRoom.AddItem(glass)
         lavaRoom.AddCreature(dragon)

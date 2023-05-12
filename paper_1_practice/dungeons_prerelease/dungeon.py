@@ -125,17 +125,20 @@ class Player:
                 for i in range(len(self.__Inventory)):
                     if instructions[1] == self.__Inventory[i].GetName():
                         print(self.__Inventory[i].GetDescription())
+
         elif instructions[0] == "eat":
             if len(instructions) <= 1:
                 print("Eat What?")
             else:
                 self.__Eat(instructions[1])
+
         elif instructions[0] == "inventory" or instructions[0] == "i":
             items = "\n"
             if len(self.__Inventory) > 0:
                 if len(self.__Inventory) == 1:
                     items += f"You have the following item: {self.__Inventory[0].GetName()}"
                 else:
+                    # formats the string for correct grammar / format
                     items += f"You have the following items: {self.__Inventory[0].GetName()}"
                     for i in range(1,len(self.__Inventory)-1):
                         items += ", " + self.__Inventory[i].GetName()
@@ -148,19 +151,26 @@ class Player:
             return False
 
     def __Move(self, direction):
+        # sets the directionFound to False
         exits = self.__Location.GetDirections()
         directionFound = False
 
         for i in range(len(exits)):
             if direction == exits[i]:
                 directionFound = True
+                # checks to see if valid location
+                # automatically moves if valid location, as moves then returns true
                 if not self.__Location.GetConnections()[i].GoThrough(self,direction):
                     print(f"You can't go {direction}")
 
+        # lets user know if not a valid direction
         if not directionFound:
             print(f"There is no exit to the {direction}")
 
-    def __Eat(self,food):
+    def __Eat(self, food):
+        # goes through each item in inventory
+        # if same item, adds the health of the item by calling the .GetHeals()
+        # removes it from inventory
         for foodPosition in range(len(self.__Inventory)):
             if self.__Inventory[foodPosition].GetName() == food:
                 self.__Health += self.__Inventory[foodPosition].GetHeals()
@@ -219,7 +229,7 @@ class Connection:
         self.__RoomTo = roomTo
         self.__Direction = direction
 
-    def GoThrough(self,player, direction):
+    def GoThrough(self, player, direction):
         if player.GetLocation() == self.__RoomFrom and direction == self.__Direction:
             player.SetLocation(self.__RoomTo)
             return True

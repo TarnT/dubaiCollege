@@ -10,6 +10,7 @@ for letter in word1:
         word2.pop(word2.index(letter))
     else:
         made = False
+        break
 
 if made:
     print("Can be made")

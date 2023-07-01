@@ -1,5 +1,3 @@
-# TODO create proper login form with error messages
-
 from flask import Flask
 from flask_login import LoginManager
 
@@ -12,6 +10,9 @@ def create_app(test_config=None):
     app.config.from_object(Config)
     from .models import db
     db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
 
     from learnFlask.models import User
 

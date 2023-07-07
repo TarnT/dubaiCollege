@@ -9,4 +9,3 @@ view_bp = Blueprint("view_bp", __name__, template_folder="templates/views")
 @login_required
 def index():
     return render_template("index.html")
-

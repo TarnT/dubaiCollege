@@ -56,10 +56,6 @@ def signUp():
             print("user created")
             return redirect(url_for("view_bp.index"))
 
-        # TODO implement checks for passwords and email
-        
-        # TODO implement notice for user for incorrect info
-
 
     return render_template("signUp.html")
 

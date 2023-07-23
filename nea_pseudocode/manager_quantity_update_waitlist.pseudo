@@ -1,0 +1,42 @@
+quantity_added = INPUT
+
+users = "SELECT Users.UserID, Users.FirstName, Users.email FROM Users, Waitlist 
+WHERE Users.UserID = Waitlist.UserID 
+AND Waitlist.ItemID = ?"
+// the ? is replaced with the ItemID for the item that has a Waitlist
+// query may be replaced with a JOIN statement later
+
+no_of_waitlist = LENGTH(users)
+IF quantity_added > no_of_waitlist:
+    waitlistQuantity = no_of_waitlist
+    publicQuantity = quantity_added - no_of_waitlist
+ELSE:
+    waitlistQuantity = quantity_added
+    publicQuantity = 0
+
+GENERATE email
+FOREACH user in users DO
+
+    user_email = user.email 
+    
+    // assuming users are extracted as objects from database
+    // actual code will vary in practical implementation
+    // as not sure of SQLAlchemy queries and types
+
+    SEND email to user
+
+END FOREACH
+
+time = time.now
+// will use a library for time
+
+WAIT 48 hours
+
+// waitlistQuantity may change as users on Waitlist make orders
+// this is separate to this block of code
+// as is handled in a different part of the application
+
+AFTER 48 hours
+
+publicQuantity = publicQuantity + waitlistQuantity
+waitlistQuantity = 0

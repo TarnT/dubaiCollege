@@ -1,0 +1,33 @@
+allowed_users = "SELECT UserID FROM Waitlist
+WHERE ItemID = ?"
+
+current_user = GET_CURRENT_LOGGED_IN_USER()
+// this can be done by checking session data
+
+IF current_user NOT IN allowed_users:
+    DISPLAY "ACCESS NOT ALLOWED" page
+ELSE:
+    DISPLAY "Waitlist Checkout" page
+
+// user places order by pressing 'buy now'
+// need to check if item is in stock to be able to make order
+
+waitlistQuantity = "SELECT WaitlistQuantity FROM ItemInventory WHERE ItemID = ?"
+
+if waitlistQuantity > 0:
+    DISPLAY "User Details" page 
+    USER PRESSES "Place order"
+    GET user details from form
+    ADD order to Database
+    DECREMENT stock in inventory 
+    "UPDATE ItemInventory SET waitlistQuantity = waitlistQuantity - 1 WHERE ItemID = ?"
+
+    CALCULATE expected order date
+    GENERATE email 
+    SEND confirmation email
+
+    REMOVE user from Waitlist
+
+ELSE:
+    DISPLAY "Out of Stock" error page
+    REDIRECT user to "general search" page

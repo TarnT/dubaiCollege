@@ -1,0 +1,50 @@
+DISPLAY "checkout" page
+
+// user enters details
+// user presses 'next'
+user_details = GET from form
+
+IF checking out with an account DO
+    userID = session.current_user_id
+ELSE 
+    // user is checking out as guest
+    GENERATE new guest account 
+    ADD guest account to database
+    creatonDate = time.now
+    "INSERT INTO User (UserID, FirstName, LastName, Email, Phone, Password, CreationDate)
+    VALUES (?, ?, ?, ?, ?, NULL, ?)"
+    // question marks will be replaced with values
+    // values from user_details
+    // no password as a guest account
+
+    userID = new guest account ID 
+END IF
+
+items = GET from cart (in session)
+
+CALCULATE TotalPrice
+total = 0
+FOR item in items DO
+    total = total + item.price
+END FOR
+
+CALCULATE expected delivery date 
+CALCULATE TotalPrice
+order_time = time.now
+// will use library to get time
+ADD order to database
+"INSERT INTO Order (OrderID, UserID, Delivery, Status, TotalPrice, TimePlaced)
+VALUES (?, ?, ?, 'placed', ?, ?)"
+// status automatically set to placed
+
+FOR item in items DO
+
+    ATTACH items to order in database
+    "INSERT INTO OrderItemCard (ItemID, OrderID, Quantity)
+    VALUES (?, ?, ?)"
+
+END FOR
+
+GENERATE confirmation email
+SEND confirmation email
+DISPLAY "order confirmation" page

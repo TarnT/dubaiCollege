@@ -1,6 +1,7 @@
 import smtplib
-import getpass
 import json
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 password_file_route = "/Users/tarntimmermans/Documents/nea_passwords/nea_passwords.py"
 with open(password_file_route, "r") as password_file:
@@ -26,19 +27,35 @@ Cheers,
 Me.
 """
 
+html_email_body = """\
+<html>
+<body>
+    <p>Hi,</p>
+    <p>This is the <b>HTML</b> version of the email.</p>
+    <p>Tarn</p>
+</body>
+</html>
+"""
+
+# create the email message object
+message = MIMEMultipart("alternative")
+message["Subject"] = subject
+message["From"] = sender_email
+message["To"] = recipient_email
+
+# attach the plain text and HTML versions
+message.attach(MIMEText(email_body, "plain"))
+message.attach(MIMEText(html_email_body, "html"))
+
 # connect to the SMTP server using TLS and send the email
 try:
 
     with smtplib.SMTP(smtp_server, smtp_port) as server:
         server.starttls()  # activate TLS encryption for security
         server.login(sender_email, sender_password)
-
-        # create the email message
-        message = f"Subject: {subject}\nFrom: {sender_email}\nTo: {recipient_email}\n\n{email_body}"
-        # two new lines create seperation from headers and body
         
         # send the email
-        server.sendmail(sender_email, recipient_email, message)
+        server.sendmail(sender_email, recipient_email, message.as_string())
 
     print("Email sent successfully!")
 

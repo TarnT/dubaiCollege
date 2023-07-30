@@ -2,6 +2,7 @@ import smtplib
 import json
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
 
 password_file_route = "/Users/tarntimmermans/Documents/nea_passwords/nea_passwords.py"
 with open(password_file_route, "r") as password_file:
@@ -27,15 +28,14 @@ Cheers,
 Me.
 """
 
-html_email_body = """\
-<html>
-<body>
-    <p>Hi,</p>
-    <p>This is the <b>HTML</b> version of the email.</p>
-    <p>Tarn</p>
-</body>
-</html>
-"""
+path_to_html = "email_template.html"
+with open(path_to_html, "r") as html_file:
+    html_content = html_file.read()
+
+path_to_image = "/Users/tarntimmermans/Documents/nea_testing_docs/20230430_134103000_iOS.jpg"
+with open(path_to_image, "rb") as photo_file:
+    photo_image = MIMEImage(photo_file.read())
+    photo_image.add_header("Content-ID", "1")
 
 # create the email message object
 message = MIMEMultipart("alternative")
@@ -45,7 +45,8 @@ message["To"] = recipient_email
 
 # attach the plain text and HTML versions
 message.attach(MIMEText(email_body, "plain"))
-message.attach(MIMEText(html_email_body, "html"))
+message.attach(MIMEText(html_content, "html"))
+message.attach(photo_image)
 
 # connect to the SMTP server using TLS and send the email
 try:

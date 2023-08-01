@@ -35,7 +35,7 @@ with open(path_to_html, "r") as html_file:
 path_to_image = "/Users/tarntimmermans/Documents/nea_testing_docs/20230430_134103000_iOS.jpg"
 with open(path_to_image, "rb") as photo_file:
     photo_image = MIMEImage(photo_file.read())
-    photo_image.add_header("Content-ID", "1")
+    photo_image.add_header("Content-ID", "watch")
 
 # create the email message object
 message = MIMEMultipart("alternative")

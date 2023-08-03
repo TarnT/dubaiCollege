@@ -29,5 +29,5 @@ def generate_pdf_with_different_fonts(pdf_filename):
     c.save()
 
 if __name__ == "__main__":
-    pdf_filename = "different_fonts.pdf"
+    pdf_filename = "/Users/tarntimmermans/Documents/repositories/dubaiCollege/nea_prototyping/pdfs/output_pdfs/different_fonts.pdf"
     generate_pdf_with_different_fonts(pdf_filename)

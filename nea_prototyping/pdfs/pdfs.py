@@ -16,5 +16,5 @@ def generate_pdf(html_content, output_path):
 with open("pdf_html.html", "r") as html_file:
     html_content = html_file.read()
 
-output_path = "test_html_output.pdf"
+output_path = "/Users/tarntimmermans/Documents/repositories/dubaiCollege/nea_prototyping/pdfs/output_pdfs/test.pdf"
 generate_pdf(html_content, output_path)

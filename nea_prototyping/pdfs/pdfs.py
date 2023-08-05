@@ -31,7 +31,7 @@ def generate_pdf(input_data, output_path):
         print(f"Error generating PDF: {e}")
 
 data = {"title": "This a title using Jinja",
-        "name": "Tarn",
+        "name": input("Enter your name: "),
         "watch_image": get_image_file_as_base64_data("watch.jpg"),
         "table_data": get_table_data("data.csv")}
 

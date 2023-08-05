@@ -10,7 +10,7 @@ def get_image_file_as_base64_data(path):
 def get_table_data(path):
     with open(path) as csv_file:
         csv_data = csv.DictReader(csv_file)
-        return csv_data
+        return list(csv_data)
 
 def generate_html(template_path, data):
     env = Environment(loader=FileSystemLoader("."))

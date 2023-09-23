@@ -107,6 +107,7 @@ class Puzzle():
                     pass
             Symbol = self.__GetSymbolFromUser()
             self.__SymbolsLeft -= 1
+            print(Row, Column)
             CurrentCell = self.__GetCell(Row, Column)
             if CurrentCell.CheckSymbolAllowed(Symbol):
                 CurrentCell.ChangeSymbolInCell(Symbol)
@@ -142,7 +143,9 @@ class Puzzle():
                     PatternString += self.__GetCell(StartRow - 1, StartColumn).GetSymbol()
                     PatternString += self.__GetCell(StartRow - 1, StartColumn + 1).GetSymbol()
                     for P in self.__AllowedPatterns:
+                        print(P.GetPatternSequence())
                         CurrentSymbol = self.__GetCell(Row, Column).GetSymbol()
+                        print(f"current symbol: {CurrentSymbol}")
                         if P.MatchesPattern(PatternString, CurrentSymbol):
                             self.__GetCell(StartRow, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
                             self.__GetCell(StartRow, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
@@ -226,6 +229,7 @@ class Cell():
         self._Symbol = NewSymbol
 
     def CheckSymbolAllowed(self, SymbolToCheck):
+        print(s)
         for Item in self.__SymbolsNotAllowed:
             if Item == SymbolToCheck:
                 return False

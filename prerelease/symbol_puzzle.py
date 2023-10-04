@@ -13,7 +13,7 @@ def Main():
     while Again == "y":
         Filename = input("Press Enter to start a standard puzzle or enter name of file to load: ")
         if len(Filename) > 0:
-            MyPuzzle = Puzzle(Filename + ".txt")
+            MyPuzzle = Puzzle(Filename + ".txt") # passed to load file, don't have to enter extension
         else:
             MyPuzzle = Puzzle(8, int(8 * 8 * 0.6))
             # passing the grid size and number of goes left (38.4 rounded to 38)
@@ -58,16 +58,26 @@ class Puzzle():
     def __LoadPuzzle(self, Filename):
         try:
             with open(Filename) as f:
-                NoOfSymbols = int(f.readline().rstrip())
-                # TODO how does it count number of lines? need to investigate
+                NoOfSymbols = int(f.readline().rstrip()) # file has number of different symbols within file, used to load
+                # next lines in txt file are the allowed symbols wihtin the file
                 for Count in range (1, NoOfSymbols + 1):
                     self.__AllowedSymbols.append(f.readline().rstrip())
                 NoOfPatterns = int(f.readline().rstrip())
+                # have the number of patterns within the file
+                # adds patterns to allowed patterns from file, splits into symbol and symbol pattern
                 for Count in range(1, NoOfPatterns + 1):
                     Items = f.readline().rstrip().split(",")
                     P = Pattern(Items[0], Items[1])
                     self.__AllowedPatterns.append(P)
+                
+                # loads gridsize from file
                 self.__GridSize = int(f.readline().rstrip())
+
+                # one line is one cell
+                # goes through the text file line by line
+                # where each line represents a cell
+                # converts each line to a cell in the grid
+                # also loads the not allowed symbols if pattern has already been made in a 3x3 grid
                 for Count in range (1, self.__GridSize * self.__GridSize + 1):
                     Items = f.readline().rstrip().split(",")
                     if Items[0] == "@":
@@ -76,6 +86,8 @@ class Puzzle():
                     else:
                         C = Cell()
                         C.ChangeSymbolInCell(Items[0])
+                        # if there is more than one not allowed symbol in the text file
+                        # handles adding multiple not allowed smybols to the text file
                         for CurrentSymbol in range(1, len(Items)):
                             C.AddToNotAllowedSymbols(Items[CurrentSymbol])
                         self.__Grid.append(C)
@@ -195,6 +207,7 @@ class Pattern():
         self.__PatternSequence = PatternString
 
     def MatchesPattern(self, PatternString, SymbolPlaced):
+        print(f"here is the pattern sequence: {self.__PatternSequence}")
         if SymbolPlaced != self.__Symbol:
             return False
         for Count in range(0, len(self.__PatternSequence)):
@@ -229,7 +242,6 @@ class Cell():
         self._Symbol = NewSymbol
 
     def CheckSymbolAllowed(self, SymbolToCheck):
-        print(s)
         for Item in self.__SymbolsNotAllowed:
             if Item == SymbolToCheck:
                 return False

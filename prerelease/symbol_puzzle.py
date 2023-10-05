@@ -59,6 +59,7 @@ class Puzzle():
         try:
             with open(Filename) as f:
                 NoOfSymbols = int(f.readline().rstrip()) # file has number of different symbols within file, used to load
+                # rstrip function gets rid of the line after reading
                 # next lines in txt file are the allowed symbols wihtin the file
                 for Count in range (1, NoOfSymbols + 1):
                     self.__AllowedSymbols.append(f.readline().rstrip())
@@ -91,18 +92,28 @@ class Puzzle():
                         for CurrentSymbol in range(1, len(Items)):
                             C.AddToNotAllowedSymbols(Items[CurrentSymbol])
                         self.__Grid.append(C)
+                # reads scoere from file
                 self.__Score = int(f.readline().rstrip())
+                # reads number of turns left in the file
                 self.__SymbolsLeft = int(f.readline().rstrip())
         except:
             print("Puzzle not loaded")
 
     def AttemptPuzzle(self):
         Finished = False
+        # loop until puzzle is finished
         while not Finished:
             self.DisplayPuzzle()
             print("Current score: " + str(self.__Score))
             Row = -1
             Valid = False
+
+            # pieces of code to get valid row and column
+            # currently can enter indexes outside of the range of the grid
+            # entering 9,9 wraps around to 1,1
+            # wraps around to row as well in modulus e.g. 13 places in row 5
+            # 13 % 8 == 5
+            # only wraps around for row, not column (except for value 9 for column)
             while not Valid:
                 try:
                     Row = int(input("Enter row number: "))
@@ -117,9 +128,15 @@ class Puzzle():
                     Valid = True
                 except:
                     pass
+            
+            # handles getting inputs from user, outputting choice
             Symbol = self.__GetSymbolFromUser()
             self.__SymbolsLeft -= 1
             print(Row, Column)
+
+            # checks to see if the symbol is allowed to be added to the class
+            # calls method in cell class 
+            # checks to see if score needs to be added to class as well
             CurrentCell = self.__GetCell(Row, Column)
             if CurrentCell.CheckSymbolAllowed(Symbol):
                 CurrentCell.ChangeSymbolInCell(Symbol)
@@ -134,6 +151,8 @@ class Puzzle():
         return self.__Score
 
     def __GetCell(self, Row, Column):
+        # imagine putting the grid into a straight line
+        # then indexing into the list
         Index = (self.__GridSize - Row) * self.__GridSize + Column - 1
         if Index >= 0:
             return self.__Grid[Index]
@@ -141,9 +160,22 @@ class Puzzle():
             raise IndexError()
 
     def CheckforMatchWithPattern(self, Row, Column):
+
+        # iterates through possible 3x3 grids near the selected grid
+        # from the grid that the user adds a symbol 
+        # rows are in decreasing order from top to bottom,
+        # starts from top left, moves across columns
+        # indexes down a row, continues moving through the columns
         for StartRow in range(Row + 2, Row - 1, -1):
             for StartColumn in range(Column - 2, Column + 1):
+                print(f"indexing into {StartRow, StartColumn}")
                 try:
+
+                    # gets the pattern string for the 3x3 grid that indexing is start from
+                    # looks at the grid from the cell the user adds the symbol to
+                    # looks at 3x3 grid with center being the cell, starting from top left
+                    # going clockwise round to the center of the grid
+                    # like snail sort
                     PatternString = ""
                     PatternString += self.__GetCell(StartRow, StartColumn).GetSymbol()
                     PatternString += self.__GetCell(StartRow, StartColumn + 1).GetSymbol()
@@ -154,11 +186,18 @@ class Puzzle():
                     PatternString += self.__GetCell(StartRow - 2, StartColumn).GetSymbol()
                     PatternString += self.__GetCell(StartRow - 1, StartColumn).GetSymbol()
                     PatternString += self.__GetCell(StartRow - 1, StartColumn + 1).GetSymbol()
+
+                    # looks for matches with all the allowed patterns
+                    # private attribute for string representation of pattern string
+                    # so uses getter method GetPatternSequence() 
                     for P in self.__AllowedPatterns:
                         print(P.GetPatternSequence())
                         CurrentSymbol = self.__GetCell(Row, Column).GetSymbol()
-                        print(f"current symbol: {CurrentSymbol}")
                         if P.MatchesPattern(PatternString, CurrentSymbol):
+
+                            # if the pattern string matches one of the allowed patterns that earn points
+                            # set all the cells in the 3x3 grid
+                            # add the current symbol that made the pattern to the not allowed symbols for all the cells in the 3x3 grid
                             self.__GetCell(StartRow, StartColumn).AddToNotAllowedSymbols(CurrentSymbol)
                             self.__GetCell(StartRow, StartColumn + 1).AddToNotAllowedSymbols(CurrentSymbol)
                             self.__GetCell(StartRow, StartColumn + 2).AddToNotAllowedSymbols(CurrentSymbol)
@@ -173,17 +212,21 @@ class Puzzle():
                     pass
         return 0
 
+    # simple block of code to get input for symbol from user
     def __GetSymbolFromUser(self):
         Symbol = ""
         while not Symbol in self.__AllowedSymbols:
             Symbol = input("Enter symbol: ")
         return Symbol
-
+    
+    # prints a horizontal line
+    # used for the top and bottom of the grid
     def __CreateHorizontalLine(self):
         Line = "  "
         for Count in range(1, self.__GridSize * 2 + 2):
             Line = Line + "-"
         return Line
+
 
     def DisplayPuzzle(self):
         print()
@@ -207,7 +250,6 @@ class Pattern():
         self.__PatternSequence = PatternString
 
     def MatchesPattern(self, PatternString, SymbolPlaced):
-        print(f"here is the pattern sequence: {self.__PatternSequence}")
         if SymbolPlaced != self.__Symbol:
             return False
         for Count in range(0, len(self.__PatternSequence)):

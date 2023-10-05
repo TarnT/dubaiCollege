@@ -230,6 +230,10 @@ class Puzzle():
 
     def DisplayPuzzle(self):
         print()
+        
+        # prints the header (column indexes and line)
+        # if statement to check size of the grid
+        # if grid size larger than 10 then doesn't print the column indexes
         if self.__GridSize < 10:
             print("  ", end='')
             for Count in range(1, self.__GridSize + 1):

@@ -31,7 +31,7 @@ sr = 128
 ts = 1.0/sr
 t = np.arange(0,1,ts)
 
-freq = 1.
+freq = 1
 x = 3*np.sin(2*np.pi*freq*t)
 
 freq = 4

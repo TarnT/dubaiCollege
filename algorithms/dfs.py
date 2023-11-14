@@ -1,22 +1,11 @@
-
-
-def dfs(graph, start_node):
-
-    visited_nodes = set()
+def iterative_depth_first_search(node):
     stack = []
-
-    current_node = start_node
-
-    all_child_nodes_visited = False
-
-    while not all_child_nodes_visited:
-        visited_nodes.add(current_node)
-        stack.append(current_node)
-
-        all_child_nodes_visited = True 
-
-        for child_node in graph[current_node]:
-            if child_node not in visited_nodes:
-                all_child_nodes_visited = False
-                current_node = child_node
-
+    visited_
+    stack.append(node)
+    while len(stack) != 0:
+        current = stack.pop()
+        if not current.visited:
+            visit(current)
+            current.visited = True
+            for neighbor in current.neighbors:
+                if not neighbor.visited: stack. append (neighbor)

@@ -10,7 +10,11 @@ def Main():
     while Again == "y":
         Filename = input("Press Enter to start a standard puzzle or enter name of file to load: ")
         if len(Filename) > 0:
-            MyPuzzle = Puzzle(Filename + ".txt")
+            if Filename not in os.listdir():
+                print("File does not exist! ")
+                MyPuzzle = Puzzle(8, int(8 * 8 * 0.6))
+            else:
+                MyPuzzle = Puzzle(Filename + ".txt")
         else:
             MyPuzzle = Puzzle(8, int(8 * 8 * 0.6))
         Score = MyPuzzle.AttemptPuzzle()

@@ -110,7 +110,9 @@ class Puzzle():
 
             # pieces of code to get valid row and column
             # currently can enter indexes outside of the range of the grid
-            # entering 9,9 wraps around to 1,1
+            # entering 9,9 wraps around to top left (8, 1)
+            # row 6, column 13 -> row 5, column 5
+
             # wraps around to row as well in modulus e.g. 13 places in row 5
             # 13 % 8 == 5
             # only wraps around for row, not column (except for value 9 for column)

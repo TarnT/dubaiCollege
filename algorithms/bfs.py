@@ -19,7 +19,7 @@ def breadth_first_search(graph, node):
     return visited_nodes
 
 graph1 = {"A": ["C","B"],
-         "B": ["A","C","D","E"],
+         "B": ["A","C","D","E"], 
          "C": ["A","B","F","D"],
          "D": ["C","E","B","H"],
          "E": ["B","D"],

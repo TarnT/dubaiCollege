@@ -48,6 +48,7 @@ class Puzzle():
             TPattern = Pattern("T", "TTT**T**T")
             self.__AllowedPatterns.append(TPattern)
             self.__AllowedSymbols.append("T")
+
     def __LoadPuzzle(self, Filename):
         try:
             with open(Filename) as f:
@@ -75,6 +76,35 @@ class Puzzle():
                 self.__SymbolsLeft = int(f.readline().rstrip())
         except:
             print("Puzzle not loaded")
+
+    def SavePuzzle(self):
+
+        filename = input("Enter name of file to be saved:")
+
+        with open(filename, "w") as file:
+            file.write('''3
+                        Q
+                        T
+                        X
+                        3
+                        Q,QQ**Q**QQ
+                        X,X*X*X*X*X
+                        T,TTT**T**T
+                        8''')
+
+            for i in range(8, 1, -1):
+                for j in range(1, 8):
+
+                    print((self.__GridSize - i) * self.__GridSize + j - 1)
+                    currentCell = self.__GetCell(i, j)
+                    if currentCell.GetSymbol() == "-":
+                        file.writelines(f",{''.join(currentCell.GetNotAllowedSymbols())}\n")
+                    else:
+                        file.writelines(f"{currentCell.GetSymbol()},{''.join(currentCell.GetNotAllowedSymbols())}\n")
+            
+            file.writelines(f"{self.__Score}\n")
+            file.writelines(f"{self.__SymbolsLeft}\n")
+
     def AttemptPuzzle(self):
         Finished = False
         while not Finished:
@@ -106,10 +136,15 @@ class Puzzle():
                     self.__Score += AmountToAddToScore
             if self.__SymbolsLeft == 0:
                 Finished = True
+
+            print("hit here! ")
+            self.SavePuzzle()
+
         print()
         self.DisplayPuzzle()
         print()
         return self.__Score
+
     def __GetCell(self, Row, Column):
         Index = (self.__GridSize - Row) * self.__GridSize + Column - 1
         if Index >= 0:
@@ -187,10 +222,15 @@ class Pattern():
         return True
     def GetPatternSequence(self):
       return self.__PatternSequence
+    
 class Cell():
     def __init__(self):
         self._Symbol = ""
         self.__SymbolsNotAllowed = []
+    
+    def GetNotAllowedSymbols(self):
+        return self.__SymbolsNotAllowed
+    
     def GetSymbol(self):
         if self.IsEmpty():
           return "-"

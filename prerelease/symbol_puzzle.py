@@ -30,6 +30,7 @@ class Puzzle():
             self.__Grid = []
             self.__AllowedPatterns = []
             self.__AllowedSymbols = []
+            print(args[0])
             self.__LoadPuzzle(args[0])
         else:
             self.__Score = 0

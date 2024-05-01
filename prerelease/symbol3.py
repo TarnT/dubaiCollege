@@ -48,6 +48,11 @@ class Puzzle():
             TPattern = Pattern("T", "TTT**T**T")
             self.__AllowedPatterns.append(TPattern)
             self.__AllowedSymbols.append("T")
+
+            # start of edit
+            self.__AllowedSymbols.append("B")
+            # end of edit
+
     def __LoadPuzzle(self, Filename):
         try:
             with open(Filename) as f:
@@ -75,6 +80,7 @@ class Puzzle():
                 self.__SymbolsLeft = int(f.readline().rstrip())
         except:
             print("Puzzle not loaded")
+
     def AttemptPuzzle(self):
         Finished = False
         while not Finished:
@@ -97,19 +103,37 @@ class Puzzle():
                 except:
                     pass
             Symbol = self.__GetSymbolFromUser()
+
             self.__SymbolsLeft -= 1
             CurrentCell = self.__GetCell(Row, Column)
-            if CurrentCell.CheckSymbolAllowed(Symbol):
-                CurrentCell.ChangeSymbolInCell(Symbol)
-                AmountToAddToScore = self.CheckforMatchWithPattern(Row, Column)
-                if AmountToAddToScore > 0:
-                    self.__Score += AmountToAddToScore
+
+            # start of edit
+            if Symbol == "B":
+                if CurrentCell.GetSymbol() == "@":
+                    if self.__Score >= 5:
+                        CurrentCell.ChangeSymbolInCell("")
+                        self.__Score -= 5
+                        print("You have used a bomb!")
+                        continue
+                    else:
+                        print("You do not have enough points to use a bomb")
+
+            else:
+
+                if CurrentCell.CheckSymbolAllowed(Symbol):
+                    CurrentCell.ChangeSymbolInCell(Symbol)
+                    AmountToAddToScore = self.CheckforMatchWithPattern(Row, Column)
+                    if AmountToAddToScore > 0:
+                        self.__Score += AmountToAddToScore
+            
+            # end of edit
             if self.__SymbolsLeft == 0:
                 Finished = True
         print()
         self.DisplayPuzzle()
         print()
         return self.__Score
+    
     def __GetCell(self, Row, Column):
         Index = (self.__GridSize - Row) * self.__GridSize + Column - 1
         if Index >= 0:

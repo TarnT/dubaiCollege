@@ -16,6 +16,7 @@ def Main():
         Score = MyPuzzle.AttemptPuzzle()
         print("Puzzle finished. Your score was: " + str(Score))
         Again = input("Do another puzzle? ").lower()
+
 class Puzzle():
     def __init__(self, *args):
         if len(args) == 1:
@@ -26,6 +27,7 @@ class Puzzle():
             self.__AllowedPatterns = []
             self.__AllowedSymbols = []
             self.__LoadPuzzle(args[0])
+            self.__WildCards = 2
         else:
             self.__Score = 0
             self.__SymbolsLeft = args[1]
@@ -48,6 +50,7 @@ class Puzzle():
             TPattern = Pattern("T", "TTT**T**T")
             self.__AllowedPatterns.append(TPattern)
             self.__AllowedSymbols.append("T")
+            self.__WildCards = 2
 
     def __LoadPuzzle(self, Filename):
         try:
@@ -77,31 +80,6 @@ class Puzzle():
         except:
             print("Puzzle not loaded")
 
-    def SavePuzzle(self):
-
-        filename = input("Enter name of file to be saved:")
-
-        with open(filename, "w") as file:
-            
-            file.write(f"{len(self.__AllowedSymbols)}\n")
-            for symbol in self.__AllowedSymbols:
-                file.write(f"{symbol}\n")
-            file.write(f"{len(self.__AllowedPatterns)}\n")
-            for pattern in self.__AllowedPatterns:
-                file.write(f"{pattern.GetPatternSequence()}\n")
-            file.write(f"{self.__GridSize}\n")
-
-            for currentCell in self.__Grid:
-
-                    print(currentCell.GetSymbol())
-                    if currentCell.GetSymbol() == "-":
-                        file.writelines(f",{''.join(currentCell.GetNotAllowedSymbols())}\n")
-                    else:
-                        file.writelines(f"{currentCell.GetSymbol()},{''.join(currentCell.GetNotAllowedSymbols())}\n")
-            
-            file.writelines(f"{self.__Score}\n")
-            file.writelines(f"{self.__SymbolsLeft}\n")
-
     def AttemptPuzzle(self):
         Finished = False
         while not Finished:
@@ -127,21 +105,30 @@ class Puzzle():
             self.__SymbolsLeft -= 1
             CurrentCell = self.__GetCell(Row, Column)
             if CurrentCell.CheckSymbolAllowed(Symbol):
-                CurrentCell.ChangeSymbolInCell(Symbol)
-                AmountToAddToScore = self.CheckforMatchWithPattern(Row, Column)
-                if AmountToAddToScore > 0:
-                    self.__Score += AmountToAddToScore
+
+                if not CurrentCell.IsEmpty() and CurrentCell.GetSymbol != "@":
+                    if self.__WildCards >= 1:
+                        Index = (self.__GridSize - Row) * self.__GridSize + Column - 1
+                        self.__Grid[Index] = WildCardCell()
+                        self.__WildCards -= 1
+
+                    else:
+                        print("Out of Wildcards!")
+                        continue
+                else:
+                    CurrentCell.ChangeSymbolInCell(Symbol)
+
+            AmountToAddToScore = self.CheckforMatchWithPattern(Row, Column)
+            if AmountToAddToScore > 0:
+                self.__Score += AmountToAddToScore
+
+            print(f"{self.__WildCards} Wildcards Left")
             if self.__SymbolsLeft == 0:
                 Finished = True
-
-            print("hit here! ")
-            self.SavePuzzle()
-
         print()
         self.DisplayPuzzle()
         print()
         return self.__Score
-
     def __GetCell(self, Row, Column):
         Index = (self.__GridSize - Row) * self.__GridSize + Column - 1
         if Index >= 0:
@@ -162,6 +149,9 @@ class Puzzle():
                     PatternString += self.__GetCell(StartRow - 2, StartColumn).GetSymbol()
                     PatternString += self.__GetCell(StartRow - 1, StartColumn).GetSymbol()
                     PatternString += self.__GetCell(StartRow - 1, StartColumn + 1).GetSymbol()
+                    
+                    PatternString = PatternString.replace("W", P.GetPatternSymbol())
+
                     for P in self.__AllowedPatterns:
                         CurrentSymbol = self.__GetCell(Row, Column).GetSymbol()
                         if P.MatchesPattern(PatternString, CurrentSymbol):
@@ -203,11 +193,14 @@ class Puzzle():
             if (Count + 1) % self.__GridSize == 0:
                 print("|")
                 print(self.__CreateHorizontalLine())
+
 class Pattern():
+
     def __init__(self, SymbolToUse, PatternString):
         self.__Symbol = SymbolToUse
         self.__PatternSequence = PatternString
     def MatchesPattern(self, PatternString, SymbolPlaced):
+
         if SymbolPlaced != self.__Symbol:
             return False
         for Count in range(0, len(self.__PatternSequence)):
@@ -217,17 +210,18 @@ class Pattern():
             except Exception as ex:
                 print(f"EXCEPTION in MatchesPattern: {ex}")
         return True
+    
     def GetPatternSequence(self):
       return self.__PatternSequence
+    
+    def GetPatternSymbol(self):
+        return self.__Symbol
     
 class Cell():
     def __init__(self):
         self._Symbol = ""
         self.__SymbolsNotAllowed = []
-    
-    def GetNotAllowedSymbols(self):
-        return self.__SymbolsNotAllowed
-    
+        
     def GetSymbol(self):
         if self.IsEmpty():
           return "-"
@@ -239,17 +233,25 @@ class Cell():
             return True
         else:
             return False
+        
     def ChangeSymbolInCell(self, NewSymbol):
         self._Symbol = NewSymbol
+
     def CheckSymbolAllowed(self, SymbolToCheck):
         for Item in self.__SymbolsNotAllowed:
             if Item == SymbolToCheck:
                 return False
         return True
+    
     def AddToNotAllowedSymbols(self, SymbolToAdd):
         self.__SymbolsNotAllowed.append(SymbolToAdd)
-    def UpdateCell(self):
-        pass
+
+    def UpdateCell(self, symbol):
+        self._Symbol == symbol
+
+    def GetNotAllowedSymbols(self):
+        return self.__SymbolsNotAllowed
+
 class BlockedCell(Cell):
     def __init__(self):
         super(BlockedCell, self).__init__()
@@ -258,3 +260,8 @@ class BlockedCell(Cell):
         return False
 if __name__ == "__main__":
     Main()
+
+class WildCardCell(Cell):
+    def __init__(self):
+        super(WildCardCell, self).__init__()
+        self._Symbol = "W"

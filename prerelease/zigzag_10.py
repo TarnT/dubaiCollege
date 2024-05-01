@@ -48,7 +48,6 @@ class Puzzle():
             TPattern = Pattern("T", "TTT**T**T")
             self.__AllowedPatterns.append(TPattern)
             self.__AllowedSymbols.append("T")
-
     def __LoadPuzzle(self, Filename):
         try:
             with open(Filename) as f:
@@ -76,32 +75,6 @@ class Puzzle():
                 self.__SymbolsLeft = int(f.readline().rstrip())
         except:
             print("Puzzle not loaded")
-
-    def SavePuzzle(self):
-
-        filename = input("Enter name of file to be saved:")
-
-        with open(filename, "w") as file:
-            
-            file.write(f"{len(self.__AllowedSymbols)}\n")
-            for symbol in self.__AllowedSymbols:
-                file.write(f"{symbol}\n")
-            file.write(f"{len(self.__AllowedPatterns)}\n")
-            for pattern in self.__AllowedPatterns:
-                file.write(f"{pattern.GetPatternSequence()}\n")
-            file.write(f"{self.__GridSize}\n")
-
-            for currentCell in self.__Grid:
-
-                    print(currentCell.GetSymbol())
-                    if currentCell.GetSymbol() == "-":
-                        file.writelines(f",{''.join(currentCell.GetNotAllowedSymbols())}\n")
-                    else:
-                        file.writelines(f"{currentCell.GetSymbol()},{''.join(currentCell.GetNotAllowedSymbols())}\n")
-            
-            file.writelines(f"{self.__Score}\n")
-            file.writelines(f"{self.__SymbolsLeft}\n")
-
     def AttemptPuzzle(self):
         Finished = False
         while not Finished:
@@ -111,21 +84,43 @@ class Puzzle():
             Valid = False
             while not Valid:
                 try:
+                    
                     Row = int(input("Enter row number: "))
-                    Valid = True
+                    if Row < 0 or Row > self.__GridSize:
+                        Valid = True
+                    else:
+                        print("Outside range, re-enter")
+                        
                 except:
                     pass
             Column = -1
             Valid = False
             while not Valid:
                 try:
+                    
                     Column = int(input("Enter column number: "))
-                    Valid = True
+                    if Column < 0 and Column > self.__GridSize:
+                        Valid = True
+                    else:
+                        print("Outside range, re-enter")
+    
                 except:
                     pass
             Symbol = self.__GetSymbolFromUser()
+            
             self.__SymbolsLeft -= 1
+
             CurrentCell = self.__GetCell(Row, Column)
+            if not CurrentCell.CheckSymbolAllowed(Symbol):
+                print("Symbol not allowed to be placed")
+                continue
+            if not CurrentCell.IsEmpty():
+                print("Cell already has value in it")
+                continue
+
+
+            self.__SymbolsLeft -= 1
+
             if CurrentCell.CheckSymbolAllowed(Symbol):
                 CurrentCell.ChangeSymbolInCell(Symbol)
                 AmountToAddToScore = self.CheckforMatchWithPattern(Row, Column)
@@ -133,21 +128,17 @@ class Puzzle():
                     self.__Score += AmountToAddToScore
             if self.__SymbolsLeft == 0:
                 Finished = True
-
-            print("hit here! ")
-            self.SavePuzzle()
-
         print()
         self.DisplayPuzzle()
         print()
         return self.__Score
-
     def __GetCell(self, Row, Column):
         Index = (self.__GridSize - Row) * self.__GridSize + Column - 1
         if Index >= 0:
             return self.__Grid[Index]
         else:
             raise IndexError()
+        
     def CheckforMatchWithPattern(self, Row, Column):
         for StartRow in range(Row + 2, Row - 1, -1):
             for StartColumn in range(Column - 2, Column + 1):
@@ -219,15 +210,10 @@ class Pattern():
         return True
     def GetPatternSequence(self):
       return self.__PatternSequence
-    
 class Cell():
     def __init__(self):
         self._Symbol = ""
         self.__SymbolsNotAllowed = []
-    
-    def GetNotAllowedSymbols(self):
-        return self.__SymbolsNotAllowed
-    
     def GetSymbol(self):
         if self.IsEmpty():
           return "-"
